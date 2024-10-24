@@ -10,16 +10,31 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runBot = void 0;
-const coingecko_1 = require("./../api/coingecko");
-const runBot = () => __awaiter(void 0, void 0, void 0, function* () {
+const jupiter_1 = require("./../api/jupiter");
+const MINT_ADDRESS = "69kdRLyP5DTRkpHraaSZAQbWmAwzF9guKjZfzMXzcbAs";
+/*export const runBot = async () => {
     try {
-        const price = yield (0, coingecko_1.fetchCoinPrice)();
+        const price = await fetchCoinPrice();
+
         if (price !== null) {
             console.log(`Token price (USD): ${price}`);
             return price;
+        } else {
+            console.log("Token price not available.");
+        }
+    } catch (error) {
+        console.log("Something went wrong");
+    }
+};*/
+const runBot = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const price = yield (0, jupiter_1.fetchTokenPrice)(MINT_ADDRESS);
+        if (price !== null) {
+            console.log(`Token price(USD): ${price}`);
+            return price;
         }
         else {
-            console.log("Token price not available.");
+            console.log("Token price not available");
         }
     }
     catch (error) {
