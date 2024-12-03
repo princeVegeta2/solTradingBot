@@ -25,25 +25,28 @@ export const quoteResponse = async (
   inputMint: string,
   outputMint: string,
   amount: number,
-  slippageBps: number = 50 // Default slippage of 0.5%
+  slippageBps: number = 50
 ): Promise<any> => {
   try {
     const url = `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippageBps=${slippageBps}`;
+    console.log("Requesting Jupiter API with URL:", url); // Debugging
 
     const response = await fetch(url);
 
     if (!response.ok) {
+      const errorBody = await response.text();
+      console.error("Response error body:", errorBody); // Log error response
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
     const data = await response.json();
-
     return data;
   } catch (error) {
-    console.error('Error fetching quote:', error);
+    console.error("Error fetching quote:", error);
     throw error;
   }
 };
+
 
 /**
  * Fetches the price of a token from the Jupiter API based on its mint address.
@@ -115,12 +118,13 @@ export const jupiterSwap = async (quoteResponseResult: object): Promise<string |
 
     // Step 4: Get the latest blockhash for transaction confirmation
     const latestBlockHash = await connection.getLatestBlockhash();
+    transaction.message.recentBlockhash = latestBlockHash.blockhash;
 
     // Step 5: Serialize and send the transaction
     const rawTransaction = transaction.serialize();
     const txid = await connection.sendRawTransaction(rawTransaction, {
       skipPreflight: true,
-      maxRetries: 2
+      maxRetries: 1
     });
 
     // Step 6: Confirm the transaction
@@ -138,3 +142,4 @@ export const jupiterSwap = async (quoteResponseResult: object): Promise<string |
     return null; // Return null if the swap failed
   }
 };
+
